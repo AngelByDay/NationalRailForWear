@@ -84,6 +84,27 @@ namespace TransportAPISharp
         }
 
         /// <summary>
+        /// Returns Details of the specified Train Service
+        /// </summary>
+        /// <param name="service_id">The Train Service ID</param>
+        /// <param name="date">Departure Date</param>
+        /// <returns>A <c>TrainServiceResponse</c> class, or null if there was an error.</returns>
+        /// <remarks>If there is an error, <c>LastError</c> will contain the error message.</remarks>
+        public async Task<TrainServiceResponse> TrainService(string service_id, DateTime date)
+        {
+            //Create Url
+            string _requestUrl = BaseUrl + $"/uk/train/service/{service_id}/{date.ToString("yyyy-MM-dd")}/"
+                + $"timetable.json?app_id={_appId}&app_key={_appKey}&live=true";
+
+            var task = await _httpClient.GetAsync(_requestUrl);
+
+            var jsonString = await task.Content.ReadAsStringAsync();
+            return deserializeResponse<TrainServiceResponse>(jsonString);
+        }
+
+        //Bus Related APIs
+
+        /// <summary>
         /// Returns bus stops near a given geographic position.
         /// </summary>
         /// <param name="lat">The latitude of the position in question.</param>

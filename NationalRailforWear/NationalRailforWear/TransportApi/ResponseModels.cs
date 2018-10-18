@@ -36,6 +36,8 @@ namespace TransportAPISharp
         }
     }
 
+    //Train Response Models
+
     /// <summary>
     /// The return class for <c>TransportApiClient.LiveTrains</c>
     /// </summary>
@@ -58,16 +60,17 @@ namespace TransportAPISharp
         public string category { get; set; }
         public string mode { get; set; }
         public string service { get; set; }
-        public string train_uid { get; set; }
+        [JsonProperty("train_uid")]
+        public string TrainUid { get; set; }
         [JsonProperty("platform")]
         public string Platform { get; set; }
         [JsonProperty("operator")]
         public string TrainOperator { get; set; }
-        [JsonProperty(PropertyName ="aimed_departure_time", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "aimed_departure_time", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime AimedDepartureTime { get; set; }
         [JsonProperty(PropertyName = "aimed_arrival_time", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime AimedArrivalTime { get; set; }
-        [JsonProperty(PropertyName ="aimed_pass_time",NullValueHandling=NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "aimed_pass_time", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime AimedPassTime { get; set; }
         public string origin_name { get; set; }
         public string source { get; set; }
@@ -76,7 +79,7 @@ namespace TransportAPISharp
         public string status { get; set; }
         [JsonProperty(PropertyName = "expected_arrival_time", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime ExpectedArrivalTime { get; set; }
-        [JsonProperty(PropertyName ="expected_departure_time", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(PropertyName = "expected_departure_time", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime ExpectedDepartureTime { get; set; }
         [JsonProperty(PropertyName = "best_arrival_estimate_mins", NullValueHandling = NullValueHandling.Ignore)]
         public float BestArrivalEstimateMins { get; set; }
@@ -89,6 +92,70 @@ namespace TransportAPISharp
         }
 
     }
+
+    /// <summary>
+    /// The return class for <c>TransportApiClient.TrainService</c>
+    /// </summary>
+    public class TrainServiceResponse
+    {
+        [JsonProperty("date")]
+        public DateTime DepartureDate { get; set; }
+        [JsonProperty("time_of_day")]
+        public DateTime DepartureTime { get; set; }
+        [JsonProperty("request_time")]
+        public DateTime RequestTime { get; set; }
+        [JsonProperty("service")]
+        public string ServiceId { get; set; }
+        [JsonProperty("train_uid")]
+        public string TrainUid { get; set; }
+        [JsonProperty("origin_name")]
+        public string OriginName { get; set; }
+        [JsonProperty("destination_name")]
+        public string DestinationName { get; set; }
+        [JsonProperty("operator")]
+        public string TrainOperatorCode { get; set; }
+        [JsonProperty("oerator_name")]
+        public string TrainOperatorName { get; set; }
+        [JsonProperty("stops")]
+        public List<TrainServiceStop> ServiceStops { get; set; }
+    }
+
+    /// <summary>
+    /// Represents a Train Departure returned by TransportApiClient
+    /// </summary>
+    public class TrainServiceStop
+    {
+        [JsonProperty("station_code")]
+        public string StationCode { get; set; }
+        [JsonProperty("tiploc_code")]
+        public string TIPLOCCode { get; set; }
+        [JsonProperty("station_name")]
+        public string StationName { get; set; }
+        [JsonProperty("platform")]
+        public string Platform { get; set; }
+        [JsonProperty("status")]
+        public string ServiceStatus { get; set; }
+        [JsonProperty(PropertyName = "aimed_departure_time", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime AimedDepartureTime { get; set; }
+        [JsonProperty(PropertyName = "aimed_arrival_time", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime AimedArrivalTime { get; set; }
+        [JsonProperty(PropertyName = "aimed_pass_time", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime AimedPassTime { get; set; }
+        [JsonProperty(PropertyName = "expected_arrival_time", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime ExpectedArrivalTime { get; set; }
+        [JsonProperty(PropertyName = "expected_departure_time", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime ExpectedDepartureTime { get; set; }
+        [JsonProperty(PropertyName = "expected_pass_time", NullValueHandling = NullValueHandling.Ignore)]
+        public DateTime ExpectedPassTime { get; set; }
+
+        public override string ToString()
+        {
+            return $"{StationName} - {AimedDepartureTime.ToShortTimeString()}";
+        }
+
+    }
+
+    //Bus Response Models
 
     /// <summary>
     /// The return class for <c>TransportApiClient.BusStopsNear</c>
@@ -105,10 +172,10 @@ namespace TransportAPISharp
         public int rpp { get; set; }
         public int total { get; set; }
         public DateTime request_time { get; set; }
-        public Stop[] stops { get; set; }
+        public BusStop[] stops { get; set; }
     }
 
-    public class Stop
+    public class BusStop
     {
         public string atcocode { get; set; }
         public string smscode { get; set; }

@@ -7,7 +7,7 @@ using System;
 
 namespace NationalRailforWear
 {
-    [Activity(Label = "@string/app_name", MainLauncher =true)]
+    [Activity(Label = "@string/app_name", MainLauncher =true, Icon ="@drawable/nr_icon")]
     public class MainActivity : ListActivity
     {
         string[] items;
@@ -27,8 +27,16 @@ namespace NationalRailforWear
         }
         protected override void OnListItemClick(ListView l, View v, int position, long id)
         {
-            var intent = new Intent(this, typeof(NearbyStationsActivity));
-            StartActivity(intent);
+            var intent = new Intent(this, typeof(TrainStationsActivity));
+            if (((TextView)v).Text == "Nearby Stations")
+            {
+                intent.PutExtra("station_type", "nearby");
+            }
+            if (((TextView)v).Text == "All Stations")
+            {
+                intent.PutExtra("station_type", "all");
+            }
+                StartActivity(intent);
         }
     }
 }

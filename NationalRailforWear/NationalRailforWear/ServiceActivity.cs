@@ -6,11 +6,12 @@ using Android.Views;
 using Android.Widget;
 using TransportAPISharp;
 using System.Collections.Generic;
+using System;
 
 namespace NationalRailforWear
 {
     [Activity(Label = "service_list")]
-    public class DeparturesActivity : ListActivity
+    public class ServiceActivity : ListActivity
     {
         //Create Clients
         TransportAPISharp.TransportApiClient _client = new TransportAPISharp.TransportApiClient("d467a8a3", "6e252569862290742e24efc45efe9976");
@@ -20,44 +21,34 @@ namespace NationalRailforWear
             base.OnCreate(savedInstanceState);
 
             //Get Station Code from Intent
-            string _station_code = Intent.GetStringExtra("station_code");
-            string _station_name = Intent.GetStringExtra("station_name");
+            string _service_id = Intent.GetStringExtra("service_id");
+            //string _station_name = Intent.GetStringExtra("station_code");
 
 
             //Add Header
             ViewGroup headerView = (ViewGroup)LayoutInflater.Inflate(Resource.Layout.listview_header, this.ListView, false);
             this.ListView.AddHeaderView(headerView);
-            ((TextView)headerView.GetChildAt(0)).Text = _station_name + "\r\nDepartures";
-
-            //Add Handlers
-            this.ListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
-            {
-                //Set Intent with Station Code and pass to DeparturesActivity
-                var intent = new Intent(this, typeof(ServiceActivity));
-                intent.PutExtra("service_id", e.View.ContentDescription);
-                StartActivity(intent);
-
-            };
+            ((TextView)headerView.GetChildAt(0)).Text = $"{_service_id}";
 
             //Get Live Departures
-            LiveTrainsResponse liveTrains = await _client.TrainsLive(_station_code);
-            if (liveTrains != null)
+            TrainServiceResponse _trainService = await _client.TrainService(_service_id, DateTime.Now);
+            if (_trainService != null)
             {
                 //Create and Apply Places Adapter
-                Dictionary<string, List<TrainDeparture>> _departures = liveTrains.Departures;
-                ListAdapter = new DeparturesAdapter(this, _departures["all"].ToArray());
+                List<TrainServiceStop> _stops = _trainService.ServiceStops;
+                ListAdapter = new ServiceAdapter(this, _stops.ToArray());
             };
         }
     }
 
-    public class DeparturesAdapter : BaseAdapter<string>
+    public class ServiceAdapter : BaseAdapter<string>
     {
-        TrainDeparture[] departures;
+        TrainServiceStop[] _stops;
         Activity context;
-        public DeparturesAdapter(Activity context, TrainDeparture[] departures) : base()
+        public ServiceAdapter(Activity context, TrainServiceStop[] stops) : base()
         {
             this.context = context;
-            this.departures = departures;
+            this._stops = stops;
         }
         public override long GetItemId(int position)
         {
@@ -65,19 +56,19 @@ namespace NationalRailforWear
         }
         public override string this[int position]
         {
-            get { return departures[position].ToString(); }
+            get { return _stops[position].ToString(); }
         }
         public override int Count
         {
-            get { return departures.Length; }
+            get { return _stops.Length; }
         }
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             View view = convertView; // re-use an existing view, if one is available
             if (view == null) // otherwise create a new one
                 view = context.LayoutInflater.Inflate(Android.Resource.Layout.SimpleListItem1, null);
-            view.FindViewById<TextView>(Android.Resource.Id.Text1).Text = departures[position].ToString();
-            view.FindViewById<TextView>(Android.Resource.Id.Text1).ContentDescription = departures[position].service;
+            view.FindViewById<TextView>(Android.Resource.Id.Text1).Text = _stops[position].ToString();
+            view.FindViewById<TextView>(Android.Resource.Id.Text1).ContentDescription = _stops[position].StationCode;
             return view;
         }
     }
